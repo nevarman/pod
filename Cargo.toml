@@ -1,7 +1,11 @@
 [package]
-name = "poday"
+name = "wallpapier"
 version = "0.1.0"
 edition = "2021"
+authors = ["nevarman"]
+description = "A rust cli tool for setting picture of the day"
+license = "MIT"
+repository = "https://github.com/yourusername/wallpapier"
 
 [dependencies]
 chrono = "0.4.39"
