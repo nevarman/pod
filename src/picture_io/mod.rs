@@ -2,14 +2,13 @@ pub mod picture_bing_provider;
 pub mod picture_nasa_provider;
 
 use crate::config::{Config, Provider};
-use chrono::{DateTime, Local, NaiveDate, Utc};
+use chrono::{DateTime, Utc};
 use std::fs;
 
 // static file name for image
 // static IMAGE_NAME: &str = "original.jpg";
 
 pub trait PictureProvider {
-
     fn get_image_path(&self, config: &Config) -> String {
         config.get_picture_file_name()
     }
@@ -18,38 +17,41 @@ pub trait PictureProvider {
 
     fn get_cached_or_save_picture(&self, config: &Config) -> std::io::Result<String> {
         let path = self.get_image_path(config);
-        
-        
 
-
-        
         let metadata_result = fs::metadata(&path);
         if !metadata_result.is_ok() {
-            println!("cache picture not found downloading");
+            println!("cache picture not found for today downloading");
             self.save_picture(config)
         } else {
-            println!("cache picture found, checking create date");
-            let metadata = metadata_result.unwrap();
-            // TODO date
-            // check metadata is file and created within 24 hours
-            if metadata.is_file()
-                && metadata
-                    .created()?
-                    .elapsed()
-                    .unwrap_or_else(|err| {
-                        println!(
-                            "Error, create time is not supported or available: {:?}",
-                            err
-                        );
-                        std::time::Duration::from_secs(24 * 60 * 60 + 1)
-                    })
-                    .as_secs()
-                    < 24 * 60 * 60
-            {
-                println!("{} was created within the last 24 hours", path);
-                return Ok(path);
-            } else {
-                self.save_picture(config)
+            println!("cache picture found for today, checking create date");
+            // Get the file metadata
+            match metadata_result {
+                Ok(metadata) => {
+                    // Get the creation time
+                    match metadata.created() {
+                        Ok(creation_time) => {
+                            // Convert SystemTime to DateTime
+                            let creation_time: DateTime<Utc> = creation_time.into();
+                            let today = Utc::now().date_naive();
+
+                            // Compare the creation date with today's date
+                            if creation_time.date_naive() == today {
+                                println!("The file was created today.");
+                                return Ok(path);
+                            } else {
+                                return self.save_picture(config);
+                            }
+                        }
+                        Err(e) => {
+                            eprintln!("Failed to get creation time: {}", e);
+                            return self.save_picture(config);
+                        }
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Failed to get file metadata: {}", e);
+                    return self.save_picture(config);
+                }
             }
         }
     }
