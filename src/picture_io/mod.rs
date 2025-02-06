@@ -53,7 +53,7 @@ fn is_created_today(creation_time: DateTime<Utc>) -> bool {
 fn get_provider(config: &Config) -> &'static dyn PictureProvider {
     match config.provider {
         // use nasa or bing provider to fetch image
-        Provider::Nasa => &picture_nasa_provider::PictureNasaProvider,
+        Provider::Nasa {..} => &picture_nasa_provider::PictureNasaProvider,
         Provider::Bing => &picture_bing_provider::PictureBingProvider,
     }
 }

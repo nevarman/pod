@@ -11,7 +11,6 @@ pub struct PictureBingProvider;
 
 impl PictureProvider for PictureBingProvider {
     fn save_picture(&self, config: &Config) -> std::io::Result<String> {
-        let _ = config;
         let url = "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US";
         // fetch data from NASA API
         let response = reqwest::blocking::get(url).expect("Failed to send request");
