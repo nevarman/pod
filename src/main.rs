@@ -1,8 +1,7 @@
 mod config;
-mod image;
+mod picture_io;
 use config::{Config, Provider};
-
-
+use wallpaper::set_from_path;
 
 fn main() {
     println!("Hello, world!");
@@ -15,16 +14,14 @@ fn main() {
     } else {
         String::new()
     };
-    let config =  Config {
-        provider,
-        random : random,
-        nasa_api_key: nasa_api       
-    };
+    
+    let config =  Config::new(provider, random, nasa_api);
     println!("{:?}", config);
 
-    let image = image::fetch_image(config).expect("Failed to fetch image");
+    let image = picture_io::get_picture_of_day(&config).expect("Failed to save image");
     println!("Image saved to: {}", image);
     
+    set_from_path(&image).expect("Failed to set wallpaper");
 }
 
 
