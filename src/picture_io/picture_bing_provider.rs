@@ -10,13 +10,14 @@ use serde_json::Value;
 pub struct PictureBingProvider;
 
 impl PictureProvider for PictureBingProvider {
-    fn save_picture(&self, config: &Config) -> std::io::Result<String> {
+    fn get_picturedata_with_metadata(&self, config: &Config) -> std::io::Result<(Vec<u8>, super::Metadata)> {
+        let _ = config;
         let url = "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US";
         // fetch data from NASA API
         let response = reqwest::blocking::get(url).expect("Failed to send request");
         // if response is not succesful print error message and exit
         if !response.status().is_success() {
-            eprintln!("Failed to fetch data from NASA API");
+            eprintln!("Failed to fetch data from bing");
             std::process::exit(1);
         }
 
@@ -27,12 +28,12 @@ impl PictureProvider for PictureBingProvider {
         let image_url = format!("https://www.bing.com{}", image.url);
         let image_response = reqwest::blocking::get(&image_url).expect("Failed to send request");
         let bytes = image_response.bytes().expect("Failed to read image bytes");
-        // save it to file
-        let path = self.get_image_path(config);
-        std::fs::write(&path, bytes).expect("Failed to save image");
-        // return full path of saved image
-        Ok(path)
-
+        let metadata = super::Metadata {
+            title: image.title.clone(),
+            description: image.copyright.clone(),
+        };
+        // return image bytes and metadata
+        Ok((bytes.to_vec(), metadata))
     }
 }
 

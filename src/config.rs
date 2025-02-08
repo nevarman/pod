@@ -8,7 +8,6 @@ pub struct Config {
 }
 
 impl Config {
-
     pub fn get_nasa_url(&self) -> String {
         match &self.provider {
             Provider::Nasa {
@@ -33,19 +32,6 @@ impl Config {
             "https://api.nasa.gov/planetary/apod?api_key={}&count=1",
             self.provider
         )
-    }
-
-    pub fn get_picture_file_name(&self) -> String {
-        let current_dir = std::env::current_dir().unwrap_or_else(|err| {
-            eprintln!("Error, current directory is not available: {:?}", err);
-            // get temp directory
-            std::env::temp_dir()
-        });
-        current_dir
-            .join(format!("{}.jpg", self.provider))
-            .to_str()
-            .unwrap()
-            .to_string()
     }
 }
 

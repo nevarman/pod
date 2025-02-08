@@ -11,7 +11,7 @@ use std::io::Error;
 pub struct PictureNasaProvider;
 
 impl PictureProvider for PictureNasaProvider {
-    fn save_picture(&self, config: &Config) -> std::io::Result<String> {
+    fn get_picturedata_with_metadata(&self, config: &Config) -> std::io::Result<(Vec<u8>, super::Metadata)> {
         let response = get_nasa_response(&config);
         println!("{:?}", response);
         // parse response as json
@@ -31,12 +31,12 @@ impl PictureProvider for PictureNasaProvider {
         // download image from url
         let image_response = reqwest::blocking::get(&data.hdurl).expect("Failed to send request");
         let bytes = image_response.bytes().expect("Failed to read image bytes");
-        
-        // save it to file
-        let path = self.get_image_path(config);
-        std::fs::write(&path, bytes).expect("Failed to save image");
-        // return full path of saved image
-        Ok(path)
+        let metadata = super::Metadata {
+            title: data.title.clone(),
+            description: data.explanation.clone(),
+        };
+        // return image bytes and metadata
+        Ok((bytes.to_vec(), metadata))
     }
 }
 
