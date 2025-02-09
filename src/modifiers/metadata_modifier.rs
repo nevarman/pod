@@ -49,7 +49,6 @@ impl<'a> ImageModifier for MetaDataModifier<'a> {
         buffer.set_rich_text(
             [
                 (title.as_str(), attrs.metrics(Metrics::new(font_size+2.0, line_height + 2.0 * 1.2))),
-                // ("\n", attrs),
                 (self.metadata.description.as_str(), attrs),
             ],
             attrs,
@@ -61,7 +60,7 @@ impl<'a> ImageModifier for MetaDataModifier<'a> {
 
         // Set up the canvas
         let height = line_height * buffer.layout_runs().count() as f32;
-        let x_offset = image.width() as f32 - width;
+        let x_offset = image.width() as f32 - width - 10.0;
         let y_offset: f32 = 10.0;
 
         // calculate average luma of the area where the text will be drawn

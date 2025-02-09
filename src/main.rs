@@ -19,6 +19,7 @@ fn main() {
     // apply size_modifier first
     if config.fit_to_screen_size.unwrap_or(false) {
         // get screen size
+        // TODO from actual screen
         let w = config.width.expect("need a target width");
         let h = config.height.expect("need a target height");
         let size_modifier = SizeModifier::new(w, h);
@@ -29,7 +30,7 @@ fn main() {
         let metadata_modifier = MetaDataModifier::new(metadata, &config);
         image = metadata_modifier.modify(image);
     }
-    
+    // save and set background
     let path = config.get_picture_file_name();
     println!("Saving picture to: {}", path);
     image.save_with_format(&path, image::ImageFormat::Jpeg).expect("Failed to save image");

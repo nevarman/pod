@@ -1450,6 +1450,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "pod"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "cosmic-text",
+ "image",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "wallpaper",
+]
+
+[[package]]
 name = "ppv-lite86"
 version = "0.2.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2436,20 +2450,6 @@ dependencies = [
  "rust-ini",
  "winapi",
  "winreg",
-]
-
-[[package]]
-name = "wallpapier"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "clap",
- "cosmic-text",
- "image",
- "reqwest",
- "serde",
- "serde_json",
- "wallpaper",
 ]
 
 [[package]]
