@@ -7,6 +7,9 @@ description = "A rust cli tool for setting picture of the day"
 license = "MIT"
 repository = "https://github.com/nevarman/pod"
 
+[profile.release]
+opt-level = 3
+
 [dependencies]
 chrono = "0.4.39"
 clap = { version = "4.5.28", features = ["derive"] }
