@@ -25,12 +25,12 @@ pub struct Config {
     /// Fit the image to the screen size. This is sometimes useful for nasa images
     pub fit_to_screen_size: Option<bool>,
 
-    #[arg(long, short)]
-    /// Target image width
+    #[arg(long)]
+    /// Target image width if fit screen size set to true
     pub width: Option<u32>,
 
-    #[arg(long = "hg")] 
-    /// Target image height
+    #[arg(long)] 
+    /// Target image height if fit screen size set to true
     pub height: Option<u32>,
 }
 

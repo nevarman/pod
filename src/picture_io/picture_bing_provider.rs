@@ -34,8 +34,8 @@ impl PictureProvider for PictureBingProvider {
         let image_response = reqwest::blocking::get(&image_url).expect("Failed to send request");
         let bytes = image_response.bytes().expect("Failed to read image bytes");
         let metadata = super::Metadata {
-            title: image.title.clone(),
-            description: image.copyright.clone(),
+            title: Some(image.title.clone()),
+            description: Some(image.copyright.clone()),
         };
         // return image bytes and metadata
         Ok((bytes.to_vec(), metadata))

@@ -5,8 +5,8 @@ use crate::config::{Config, Provider};
 
 #[derive(Debug)]
 pub struct Metadata {
-    pub title: String,
-    pub description: String,
+    pub title: Option<String>,
+    pub description: Option<String>,
 }
 
 pub trait PictureProvider {

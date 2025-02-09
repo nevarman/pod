@@ -34,8 +34,8 @@ impl PictureProvider for PictureNasaProvider {
         let image_response = reqwest::blocking::get(&data.hdurl).expect("Failed to send request");
         let bytes = image_response.bytes().expect("Failed to read image bytes");
         let metadata = super::Metadata {
-            title: data.title.clone(),
-            description: data.explanation.clone(),
+            title: Some(data.title.clone()),
+            description: Some(data.explanation.clone()),
         };
         // return image bytes and metadata
         Ok((bytes.to_vec(), metadata))
@@ -56,10 +56,10 @@ fn get_nasa_response(config: &Config) -> String {
         }
         // parse response as json
         let response_text = response.text().unwrap();
-        println!("{}: {}", url, response_text);
         let media_type =
             from_str::<NasaMediaType>(&response_text).expect("Failed to parse media type");
         if media_type.media_type == "video" {
+            println!("Got a video today, hacking a random image instead");
             get_nasa_random_response(config)
         } else {
             response_text
