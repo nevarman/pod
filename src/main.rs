@@ -4,7 +4,7 @@ mod modifiers;
 
 use clap::Parser;
 use config::Config;
-use modifiers::metadata_modifier;
+use modifiers::{metadata_modifier::MetaDataModifier, size_modifier::SizeModifier, ImageModifier};
 
 fn main() {
     // parse command line arguments
@@ -12,12 +12,27 @@ fn main() {
     println!("{:?}", config);
 
     let (buffer, metadata) = picture_io::get_picture_of_day_with_metadata(&config).expect("Failed to fetch image");
-    let image = image::load_from_memory(&buffer).expect("Failed to load image");
+    println!("Hacking complete");
+    let mut image = image::load_from_memory(&buffer).expect("Failed to load image");
+    println!("Applying modifiers");
+
+    // apply size_modifier first
+    if config.fit_to_screen_size.unwrap_or(false) {
+        // get screen size
+        let w = config.width.expect("need a target width");
+        let h = config.height.expect("need a target height");
+        let size_modifier = SizeModifier::new(w, h);
+        image = size_modifier.modify(image);
+    }
+    // apply metadata_modifier next
+    if config.add_metadata.unwrap_or(false) {
+        let metadata_modifier = MetaDataModifier::new(metadata, &config);
+        image = metadata_modifier.modify(image);
+    }
     
-    // check config for modifiers
-    // todo add modifiers
-    let image = metadata_modifier::modify_with_metadata(metadata, image);
-    
-    image.save("image.jpg").expect("Failed to save image");
-    //wallpaper::set_from_path(&image).expect("Failed to set wallpaper");
+    let path = config.get_picture_file_name();
+    println!("Saving picture to: {}", path);
+    image.save_with_format(&path, image::ImageFormat::Jpeg).expect("Failed to save image");
+    println!("Setting wallpaper");
+    wallpaper::set_from_path(&path).expect("Failed to set wallpaper");
 }

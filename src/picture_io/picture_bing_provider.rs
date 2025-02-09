@@ -10,7 +10,11 @@ use serde_json::Value;
 pub struct PictureBingProvider;
 
 impl PictureProvider for PictureBingProvider {
-    fn get_picturedata_with_metadata(&self, config: &Config) -> std::io::Result<(Vec<u8>, super::Metadata)> {
+    fn get_picturedata_with_metadata(
+        &self,
+        config: &Config,
+    ) -> std::io::Result<(Vec<u8>, super::Metadata)> {
+        println!("Hacking Bing server...");
         let _ = config;
         let url = "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US";
         // fetch data from NASA API
@@ -23,7 +27,8 @@ impl PictureProvider for PictureBingProvider {
 
         // parse response as json
         let response_text = response.text().unwrap();
-        let bing_response = from_str::<BingResponse>(&response_text).expect("Failed to parse media type");
+        let bing_response =
+            from_str::<BingResponse>(&response_text).expect("Failed to parse media type");
         let image = &bing_response.images[0];
         let image_url = format!("https://www.bing.com{}", image.url);
         let image_response = reqwest::blocking::get(&image_url).expect("Failed to send request");

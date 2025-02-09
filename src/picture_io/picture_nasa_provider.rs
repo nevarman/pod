@@ -11,12 +11,14 @@ use std::io::Error;
 pub struct PictureNasaProvider;
 
 impl PictureProvider for PictureNasaProvider {
-    fn get_picturedata_with_metadata(&self, config: &Config) -> std::io::Result<(Vec<u8>, super::Metadata)> {
+    fn get_picturedata_with_metadata(
+        &self,
+        config: &Config,
+    ) -> std::io::Result<(Vec<u8>, super::Metadata)> {
+        println!("Hacking Nasa server...");
         let response = get_nasa_response(&config);
-        println!("{:?}", response);
         // parse response as json
         let data = from_str::<NasaImageResponse>(&response);
-        println!("{:?}", data);
         // if data is not parsed successfully print error message and exit
         let data = match data {
             Ok(data) => data,
@@ -41,36 +43,46 @@ impl PictureProvider for PictureNasaProvider {
 }
 
 fn get_nasa_response(config: &Config) -> String {
-    // if config.random use count variable in url to get random image
-    let url = config.get_nasa_url();
-
-    // fetch data from NASA API
-    let response = reqwest::blocking::get(&url).expect("Failed to send request");
-    // if response is not succesful print error message and exit
-    if !response.status().is_success() {
-        eprintln!("Failed to fetch data from NASA API");
-        std::process::exit(1);
-    }
-
-    // parse response as json
-    let response_text = response.text().unwrap();
-    let media_type = from_str::<NasaMediaType>(&response_text).expect("Failed to parse media type");
-    if media_type.media_type == "video" {
-        let url = config.get_nasa_random_url();
+    if config.is_nasa_random() {
+        get_nasa_random_response(config)
+    } else {
+        let url = config.get_nasa_url();
+        // fetch data from NASA API
         let response = reqwest::blocking::get(&url).expect("Failed to send request");
         // if response is not succesful print error message and exit
         if !response.status().is_success() {
             eprintln!("Failed to fetch data from NASA API");
             std::process::exit(1);
         }
+        // parse response as json
         let response_text = response.text().unwrap();
+        println!("{}: {}", url, response_text);
+        let media_type =
+            from_str::<NasaMediaType>(&response_text).expect("Failed to parse media type");
+        if media_type.media_type == "video" {
+            get_nasa_random_response(config)
+        } else {
+            response_text
+        }
+    }
+}
+
+fn get_nasa_random_response(config: &Config) -> String {
+    let random_response = |res: String| {
         // trim end of response to remove trailing \n
-        let response_text = response_text.trim_end().to_string();
+        let response_text = res.trim_end().to_string();
         // remove beginning and trailing [ and ] from response
         response_text[1..response_text.len() - 1].to_string()
-    } else {
-        response_text
+    };
+    let url = config.get_nasa_random_url();
+    let response = reqwest::blocking::get(&url).expect("Failed to send request");
+    // if response is not succesful print error message and exit
+    if !response.status().is_success() {
+        eprintln!("Failed to fetch data from NASA API");
+        std::process::exit(1);
     }
+    let response_text = response.text().unwrap();
+    random_response(response_text)
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
