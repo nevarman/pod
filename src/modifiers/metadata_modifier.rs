@@ -17,6 +17,10 @@ impl<'a> MetaDataModifier<'a> {
 
 impl<'a> ImageModifier for MetaDataModifier<'a> {
     fn modify(&self, mut image: DynamicImage) -> DynamicImage {
+        if self.metadata.title.is_none() && self.metadata.description.is_none() {
+            return image;
+        }
+
         let mut font_db = cosmic_text::fontdb::Database::new();
         font_db.load_system_fonts();
 
@@ -26,7 +30,7 @@ impl<'a> ImageModifier for MetaDataModifier<'a> {
         // A SwashCache stores rasterized glyphs, create one per application
         let mut swash_cache = SwashCache::new();
 
-        let font_size = self.config.metadata_font_size.unwrap_or(22.0);
+        let font_size = self.config.metadata_font_size.unwrap_or(20.0);
         let line_height = font_size * 1.2;
         let metrics = Metrics::new(font_size, line_height);
 
@@ -43,13 +47,14 @@ impl<'a> ImageModifier for MetaDataModifier<'a> {
         // Attributes indicate what font to choose
         let font_name = self.config.metadata_font.as_ref().map_or("Arial", |v| v);
         let attrs = Attrs::new().family(Family::Name(font_name));
-        let title = format!("ⓘ {}\n\n",self.metadata.title.as_str());
-        
         // Set the text to be displayed
         buffer.set_rich_text(
             [
-                (title.as_str(), attrs.metrics(Metrics::new(font_size+2.0, line_height + 2.0 * 1.2))),
-                (self.metadata.description.as_str(), attrs),
+                (
+                    (format!("ⓘ {}\n\n", self.metadata.title.as_ref().unwrap_or(&String::new()))).as_str(),
+                    attrs.metrics(Metrics::new(font_size + 2.0, line_height + 2.0 * 1.2)),
+                ),
+                (self.metadata.description.as_ref().unwrap_or(&String::new()), attrs),
             ],
             attrs,
             Shaping::Advanced,
@@ -74,7 +79,7 @@ impl<'a> ImageModifier for MetaDataModifier<'a> {
                 avg_luma = (luminance + avg_luma) / 2.0;
             }
         }
-        
+
         let text_color: Color = if avg_luma > 0.5 {
             Color::rgb(0u8, 0u8, 0u8)
         } else {
