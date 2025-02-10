@@ -8,27 +8,30 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
+  publish:
+    name: Publish for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: pod
+            asset_name: pod-linux-amd64
+          - os: windows-latest
+            artifact_name: pod.exe
+            asset_name: pod-windows-amd64
+          - os: macos-latest
+            artifact_name: pod
+            asset_name: pod-macos-amd64
+
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Build
-      run: cargo build --release
-    - name: Upload to Release
-      uses: JasonEtco/upload-to-release@v0.1.1
+      run: cargo build --release --locked
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
       with:
-          args: ./target/release/pod
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  build-win:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: cargo build --release
-    - name: Upload to Release
-      uses: JasonEtco/upload-to-release@v0.1.1
-      with:
-          args: ./target/release/pod.exe
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: target/release/${{ matrix.artifact_name }}
+        asset_name: ${{ matrix.asset_name }}
+        tag: ${{ github.ref }}
