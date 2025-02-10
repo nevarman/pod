@@ -15,11 +15,11 @@ jobs:
     - name: Build
       run: cargo build --release
     - name: Upload to Release
-      uses: Shopify/upload-to-release@v2.0.0
+      uses: JasonEtco/upload-to-release@v0.1.1
       with:
-        name: pod
-        path: ./target/release/pod
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+          args: ./target/release/pod
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build-win:
     runs-on: windows-latest
     steps:
@@ -27,8 +27,8 @@ jobs:
     - name: Build
       run: cargo build --release
     - name: Upload to Release
-      uses: Shopify/upload-to-release@v2.0.0
+      uses: JasonEtco/upload-to-release@v0.1.1
       with:
-        name: pod.exe
-        path: ./target/release/pod.exe
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+          args: ./target/release/pod.exe
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}}
