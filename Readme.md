@@ -18,13 +18,13 @@ Use ``pod -h`` to see available commands.
 Get your api key at: https://api.nasa.gov/
 
 ```
-pod --add-metadata true --metadata-font "Fira Code" --metadata-font-size 18 --fit-to-screen-size true --width 2560 --hg 1440 nasa --nasa-api-key=<your api key>
+pod --add-metadata true --metadata-font "Fira Code" --metadata-font-size 18 --fit-to-screen-size true --width 2560 --height 1440 nasa --nasa-api-key=<your api key>
 ```
 
 ### For Bing
 
 ```
-pod --add-metadata true --metadata-font "Fira Code" --metadata-font-size 18 --fit-to-screen-size true --width 2560 --hg 1440 bing
+pod --add-metadata true --metadata-font "Fira Code" --metadata-font-size 18 --fit-to-screen-size true --width 2560 --height 1440 bing
 ```
 
 You can run the command from task scheduler or as a systemd service to change your wallpaper daily.

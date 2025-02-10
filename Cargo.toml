@@ -8,7 +8,10 @@ license = "MIT"
 repository = "https://github.com/nevarman/pod"
 
 [profile.release]
-opt-level = 3
+opt-level = 'z'
+lto = true
+codegen-units = 1
+strip = true
 
 [dependencies]
 chrono = "0.4.39"
