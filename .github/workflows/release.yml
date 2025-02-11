@@ -15,14 +15,14 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: pod
-            asset_name: pod-linux-amd64
+            artifact_name: pod-linux-amd64
+            asset_name: pod
           - os: windows-latest
-            artifact_name: pod.exe
-            asset_name: pod-windows-amd64
+            artifact_name: pod-windows-amd64.exe
+            asset_name: pod.exe
           - os: macos-latest
-            artifact_name: pod
-            asset_name: pod-macos-amd64
+            artifact_name: pod-macos-amd64
+            asset_name: pod
 
     steps:
     - uses: actions/checkout@v3
