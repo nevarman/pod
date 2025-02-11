@@ -9,8 +9,14 @@ use serde_json::Value;
 
 pub struct PictureBingProvider;
 
+impl PictureBingProvider {
+    pub fn new() -> Self {
+        PictureBingProvider
+    }
+}
+
 impl PictureProvider for PictureBingProvider {
-    fn get_picturedata_with_metadata(
+    fn get_picture_with_metadata(
         &self,
         config: &Config,
     ) -> std::io::Result<(Vec<u8>, super::Metadata)> {

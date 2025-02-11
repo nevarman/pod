@@ -14,21 +14,27 @@ fn main() {
     let (buffer, metadata) = picture_io::get_picture_of_day_with_metadata(&config).expect("Failed to fetch image");
     println!("Hacking complete");
     let mut image = image::load_from_memory(&buffer).expect("Failed to load image");
-    println!("Applying modifiers");
 
+    println!("Applying modifiers");
     // apply size_modifier first
     if config.fit_to_screen_size.unwrap_or(false) {
         // get screen size
-        // TODO from actual screen
+        // TODO from actual screen?
         let w = config.width.expect("need a target width");
         let h = config.height.expect("need a target height");
         let size_modifier = SizeModifier::new(w, h);
-        image = size_modifier.modify(image);
+        let result = size_modifier.modify(&mut image);
+        if result.is_err() {
+            println!("Failed to resize image");
+        }
     }
     // apply metadata_modifier next
     if config.add_metadata.unwrap_or(false) {
         let metadata_modifier = MetaDataModifier::new(metadata, &config);
-        image = metadata_modifier.modify(image);
+        let result = metadata_modifier.modify(&mut image);
+        if result.is_err() {
+            println!("Failed to add metadata");
+        }
     }
     // save and set background
     let path = config.get_picture_file_name();

@@ -10,8 +10,14 @@ use std::io::Error;
 
 pub struct PictureNasaProvider;
 
+impl PictureNasaProvider {
+    pub fn new() -> Self {
+        PictureNasaProvider
+    }
+}
+
 impl PictureProvider for PictureNasaProvider {
-    fn get_picturedata_with_metadata(
+    fn get_picture_with_metadata(
         &self,
         config: &Config,
     ) -> std::io::Result<(Vec<u8>, super::Metadata)> {
@@ -49,7 +55,7 @@ fn get_nasa_response(config: &Config) -> String {
         let url = config.get_nasa_url();
         // fetch data from NASA API
         let response = reqwest::blocking::get(&url).expect("Failed to send request");
-        // if response is not succesful print error message and exit
+        // if response is not successful print error message and exit
         if !response.status().is_success() {
             eprintln!("Failed to fetch data from NASA API");
             std::process::exit(1);
@@ -76,7 +82,7 @@ fn get_nasa_random_response(config: &Config) -> String {
     };
     let url = config.get_nasa_random_url();
     let response = reqwest::blocking::get(&url).expect("Failed to send request");
-    // if response is not succesful print error message and exit
+    // if response is not successful print error message and exit
     if !response.status().is_success() {
         eprintln!("Failed to fetch data from NASA API");
         std::process::exit(1);

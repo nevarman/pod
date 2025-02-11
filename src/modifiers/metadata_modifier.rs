@@ -3,7 +3,13 @@ use crate::{config::Config, modifiers::ImageModifier};
 
 use cosmic_text::{Attrs, Buffer, Color, Family, FontSystem, Metrics, Shaping, SwashCache};
 use image::{DynamicImage, GenericImage, GenericImageView, Pixel};
+use crate::modifiers::ImageModifierError;
 
+/// MetaDataModifier is responsible for modifying images based on provided metadata
+/// and configuration settings.
+///
+/// - `Metadata`: Provides additional information about the modification rules.
+/// - `Config`: Pointer to a configuration defining image properties or globally defined behavior.
 pub struct MetaDataModifier<'a> {
     metadata: Metadata,
     config: &'a Config,
@@ -13,18 +19,25 @@ impl<'a> MetaDataModifier<'a> {
     pub fn new(metadata: Metadata, config: &'a Config) -> Self {
         MetaDataModifier { metadata, config }
     }
+
+    fn metadata_is_invalid(&self) -> bool {
+        self.metadata.title.is_none() && self.metadata.description.is_none()
+    }
 }
 
 impl<'a> ImageModifier for MetaDataModifier<'a> {
-    fn modify(&self, mut image: DynamicImage) -> DynamicImage {
-        if self.metadata.title.is_none() && self.metadata.description.is_none() {
-            return image;
+    fn modify(&self, image: &mut DynamicImage) -> Result<(), ImageModifierError> {
+        if self.metadata_is_invalid() {
+            return Err(ImageModifierError::InvalidMetadata(
+                "metadata title or description needed".to_string(),
+            ));
         }
 
         let mut font_db = cosmic_text::fontdb::Database::new();
         font_db.load_system_fonts();
 
         // A FontSystem provides access to detected system fonts, create one per application
+        // todo locale
         let mut font_system = FontSystem::new_with_locale_and_db("En-US".into(), font_db);
 
         // A SwashCache stores rasterized glyphs, create one per application
@@ -118,6 +131,6 @@ impl<'a> ImageModifier for MetaDataModifier<'a> {
             );
         });
         println!("Added metadata to image");
-        image
+        Ok(())
     }
 }
